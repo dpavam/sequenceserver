@@ -1,8 +1,12 @@
 import React, { Component } from 'react';
-import _ from 'underscore';
+import _, { get } from 'underscore';
 
 import downloadFASTA from './download_fasta';
 import AlignmentExporter from './alignment_exporter'; // to download textual alignment
+import { data } from 'jquery';
+import getEmails from './get_emails';
+import postValues from './post_function';
+
 
 /**
  * Renders links for downloading hit information in different formats.
@@ -20,6 +24,8 @@ export default class extends Component {
         this.summaryString = this.summaryString.bind(this);
         this.indexJSX = this.indexJSX.bind(this);
         this.downloadsPanelJSX = this.downloadsPanelJSX.bind(this);
+        this.sharingPanelJSX = this.sharingPanelJSX.bind(this);
+        this.shareCloud = this.shareCloud.bind(this);
         this.copyURL = this.copyURL.bind(this);
         this.mailtoLink = this.mailtoLink.bind(this);
         this.sharingPanelJSX = this.sharingPanelJSX.bind(this);
@@ -165,6 +171,13 @@ export default class extends Component {
 
         var message = encodeURI(mailto).replace(/(%20){2,}/g, '');
         return message;
+    }
+
+    // Posts job_id and emails to server.
+    shareCloud() {
+        let headers = getEmails();
+        headers['id'] = this.props.data.search_id;
+        postValues('cloudshare', headers);
     }
 
     topPanelJSX() {
@@ -321,6 +334,18 @@ export default class extends Component {
                                 title="Send by email" href={this.mailtoLink()}
                                 target="_blank" rel="noopener noreferrer">
                                 <i className="fa fa-envelope"></i> Send by email
+                            </a>
+                        </li>
+                    }
+                    {
+                        <li>
+                            <a href='#' className="btn-link cloud-Post cursor-pointer" data-toggle="tooltip"
+                                title="Share these results with anyone via email.
+                                Type your email, the email(s) of those you want 
+                                to share it with, and we will send them an access URL.
+                                Make sure alerts are enabled for this feature to work
+                                properly." onClick={this.shareCloud}>
+                                <i className="fa fa-cloud"></i> Share to cloud
                             </a>
                         </li>
                     }

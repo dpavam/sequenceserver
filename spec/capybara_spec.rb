@@ -1,3 +1,6 @@
+require 'spec_helper'
+require 'rack/test'
+
 describe 'a browser', type: :feature, js: true do
   before :all do
     SequenceServer.init(database_dir: "#{__dir__}/database/v5")
@@ -336,6 +339,23 @@ describe 'a browser', type: :feature, js: true do
     wait_for_download
     expect(File.basename(downloaded_file)).to eq('Kablammo-Query_1-SI2_2_0_06267.png')
     clear_downloads
+  end
+
+  it 'can send results to cloudshare server' do
+    # Do a BLASTP search. protein_query refers to the first two sequence in
+    # protein_databases[0], so the top hits are the query sequences themselves.
+    perform_search(query: protein_query,
+                   databases: protein_databases.values_at(0))
+
+    # Clicks 'Share to cloud', fills the prompts.
+    accept_prompt(with: 'recipientsEmail@email.com') do
+      accept_prompt(with: 'sendersEmail@email.com') do
+        click_link('Share to cloud')
+      end
+    end
+    # Check content of page
+    page.should have_content('Everything checks out'),\
+                'In case of failure, check the receiving app is running.'
   end
 
   ## Helpers ##
