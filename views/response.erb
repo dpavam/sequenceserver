@@ -1,0 +1,16 @@
+<!-- We will initialise React on this div -->
+<div id="view"></div>
+
+<div class = "modal-body">
+    <h4> Cloud server says: </h4>
+   <h3> <%= session[:response] %> </h3>
+   <h3> Go to the previous page to see your results again. </h3>
+</div>
+<div class= "modal-body">
+    <button
+        type="button" 
+        class = "btn btn-default btn-primary"
+            onclick="history.back()">
+            Go to previous page
+    </button>
+</div>

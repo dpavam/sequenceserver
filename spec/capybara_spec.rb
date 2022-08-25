@@ -225,6 +225,23 @@ describe 'a browser', type: :feature, js: true do
     expect(href).to include(protein_databases.values_at(0).join() && '%20')
   end
 
+  it 'can send results to cloudshare server' do
+    # Do a BLASTP search. protein_query refers to the first two sequence in
+    # protein_databases[0], so the top hits are the query sequences themselves.
+    perform_search(query: protein_query,
+                   databases: protein_databases.values_at(0))
+
+    # Clicks 'Share to cloud', fills the prompts.
+    accept_prompt(with: 'recipientsEmail@email.com') do
+      accept_prompt(with: 'sendersEmail@email.com') do
+        click_link('Share to cloud')
+      end
+    end
+    # Check content of page
+    page.should have_content('Everything checks out'),\
+                'In case of failure, check the receiving app is running.'
+  end
+
   it 'can show hit sequences in a modal' do
     # Do a BLASTP search. protein_query refers to the first two sequence in
     # protein_databases[0], so the top hits are the query sequences themselves.
